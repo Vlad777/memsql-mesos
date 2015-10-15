@@ -1,0 +1,3 @@
+#!/bin/sh
+exec /sbin/setuser memsql /memsql_demo/memsql-demo server --debug \
+    --port $MEMSQL_DEMO_PORT --db-port $MEMSQL_PORT >/var/log/demo_worker.log 2>&1

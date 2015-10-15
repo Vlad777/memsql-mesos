@@ -1,0 +1,11 @@
+*.pyc
+__pycache__
+*.swp
+
+node_modules
+python_env*
+lib
+pkg
+
+venv
+static/assets

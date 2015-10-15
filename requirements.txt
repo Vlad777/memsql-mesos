@@ -1,0 +1,10 @@
+kazoo==2.0
+simplejson==3.6.3
+tornado==4.0.2
+requests==2.4.1
+good==0.0.6-3
+enum34==1.0.4
+ipython
+ipdb
+flake8==2.2.5
+memsql==2.14.4

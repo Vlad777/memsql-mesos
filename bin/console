@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+# setup import paths
+import os
+import sys
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.append(ROOT_PATH)
+
+import IPython
+
+from memsql_framework.scheduler.main import setup
+
+from memsql_framework.data import const  # noqa
+
+if __name__ == "__main__":
+    _, root, _ = setup()
+    IPython.embed()

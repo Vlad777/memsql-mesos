@@ -1,0 +1,3 @@
+[flake8]
+exclude: __pycache__,*.pyc
+ignore: E121,E128,E201,E202,E221,E222,E241,E302,E4,E5,E265,E731

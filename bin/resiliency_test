@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import sys
+
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.append(ROOT_PATH)
+
+from memsql_framework.scheduler import resiliency_test
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scheduler-pid", default=None, type=int, help="The PID of the scheduler process")
+    options = parser.parse_args()
+
+    resiliency_test.run(options.scheduler_pid)

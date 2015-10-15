@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.append(ROOT_PATH)
+
+import argparse
+from memsql_framework.scheduler import main
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ui-only", default=False, action="store_true", help="Only run the UI")
+    options = parser.parse_args()
+
+    if options.ui_only:
+        main.run_ui(ROOT_PATH)
+    else:
+        main.run(ROOT_PATH)

@@ -1,0 +1,33 @@
+FROM phusion/baseimage:0.9.16
+MAINTAINER hurshal@memsql.com
+
+# use init system
+CMD ["/sbin/my_init"]
+
+# package setup
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libapr1-dev \
+    libcurl4-nss-dev \
+    libmysqlclient-dev \
+    libsasl2-dev \
+    libsasl2-modules \
+    libsvn-dev \
+    mysql-client \
+    python-dev \
+    python-pip
+
+# python setup
+ADD ./mesos-containers/mesos-interface-0.22.1 /tmp/mesos-interface-0.22.1
+RUN cd /tmp/mesos-interface-0.22.1 && python setup.py install
+ADD ./mesos-containers/mesos-0.22.1_rc2-py2.7-linux-x86_64.egg /tmp/mesos-0.22.1.egg
+RUN easy_install /tmp/mesos-0.22.1.egg
+ADD ./requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+ENV MEMSQL_OPS_USER_AGENT_SUFFIX mesos
+
+ADD . /memsql_framework
+RUN mkdir -p /etc/my_init.d
+
+ADD scheduler.service /etc/my_init.d/scheduler

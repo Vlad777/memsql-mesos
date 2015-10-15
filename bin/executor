@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import logging
+import os
+import sys
+
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.append(ROOT_PATH)
+
+from memsql_framework import DEFAULT_DATA_ROOT_PATH
+from memsql_framework.util import log
+from memsql_framework.executor.main import Executor
+from memsql_framework.executor.hosts import update_hosts_forever
+
+from memsql_framework.data.root import Root
+
+ZOOKEEPER_URL = os.environ['ZOOKEEPER_URL']
+
+if __name__ == "__main__":
+    print("Starting Executor")
+    log.setup()
+    logger = logging.getLogger(__name__)
+
+    root = Root(DEFAULT_DATA_ROOT_PATH).connect(ZOOKEEPER_URL)
+
+    try:
+        if "--hosts-loop" in sys.argv:
+            logger.info("Starting MemSQL Update Hosts loop")
+            update_hosts_forever(root)
+        else:
+            logger.info("Starting MemSQL Executor")
+            driver = Executor(root)
+            driver.start()
+    except Exception:
+        logger.error("Fail", exc_info=True)
+        sys.exit(1)

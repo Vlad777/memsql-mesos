@@ -1,0 +1,6 @@
+FROM ubuntu:14.04
+RUN apt-get -y update
+RUN apt-get install -y gdebi-core default-jre-headless
+
+ADD mesos_0.22.1-rc2-1.0.ubuntu1404_amd64.deb /tmp/mesos.deb
+RUN gdebi -n /tmp/mesos.deb

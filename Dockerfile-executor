@@ -1,0 +1,45 @@
+FROM phusion/baseimage:0.9.16
+
+# use init system
+CMD ["/sbin/my_init"]
+
+# package setup
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    jq \
+    libmysqlclient-dev \
+    libsasl2-modules \
+    mysql-client \
+    python-dev \
+    python-pip
+
+RUN curl -s  $(curl -s "http://versions.memsql.com/memsql-demo/latest" | jq -r .tar) \
+    -o /tmp/memsql_demo.tar.gz
+RUN cd /tmp && tar -xzf memsql_demo.tar.gz \
+    && mv memsql-demo-* /memsql_demo
+
+RUN rm -rf /tmp/*.tar.gz
+
+# MemSQL user
+RUN useradd -s /bin/bash -m memsql
+
+# python setup
+ADD ./requirements.txt /tmp/req.txt
+RUN pip install -r /tmp/req.txt && rm /tmp/req.txt
+
+RUN mkdir -p /etc/my_init.d
+ADD ./memsql_framework/executor/executor.service /etc/my_init.d/executor
+
+RUN mkdir /etc/service/dynamic_hosts
+ADD ./memsql_framework/executor/dynamic_hosts.service /etc/service/dynamic_hosts/run
+
+RUN mkdir /etc/service/demo_server
+ADD ./memsql_framework/executor/demo_server.service /etc/service/demo_server/run
+RUN mkdir /etc/service/demo_worker
+ADD ./memsql_framework/executor/demo_worker.service /etc/service/demo_worker/run
+
+ENV MEMSQL_OPS_USER_AGENT_SUFFIX mesos
+
+ADD . /memsql_framework
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

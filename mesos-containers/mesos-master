@@ -1,0 +1,2 @@
+FROM psy3.memcompute.com/mesos
+ENTRYPOINT ["mesos-master"]

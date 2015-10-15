@@ -1,0 +1,4 @@
+#!/bin/bash
+/memsql_framework/bin/scheduler &
+schedulerpid=$!
+/memsql_framework/bin/resiliency_test --scheduler-pid $schedulerpid

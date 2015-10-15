@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /memsql_framework/bin/executor --hosts-loop >/var/log/dynamic_hosts.log 2>&1
