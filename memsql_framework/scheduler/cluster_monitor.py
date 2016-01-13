@@ -214,7 +214,9 @@ class ClusterMonitor(SuperThread):
                     try:
                         # Tell this node to become the primary if it isn't
                         # already.
-                        client.call("network/unfollow", {})
+                        current_state = client.call("network/current_state", {})
+                        if current_state != "Primary":
+                            client.call("network/unfollow", {})
                     except api_client.ApiException:
                         pass
                     # Attach to all existing MemSQL nodes so that we can
@@ -226,8 +228,7 @@ class ClusterMonitor(SuperThread):
                             "properties": {
                                 "host": node.data.host,
                                 "port": node.data.memsql_port,
-                                "user": "root",
-                                "password": ""
+                                "user": "root"
                             }
                         })
                 else:
@@ -236,7 +237,9 @@ class ClusterMonitor(SuperThread):
                         try:
                             # Unfollow in case this agent is already following a
                             # different primary.
-                            client.call("network/unfollow", {})
+                            current_state = client.call("network/current_state", {})
+                            if current_state != "Primary":
+                                client.call("network/unfollow", {})
                         except api_client.ApiException:
                             pass
                         client.call("network/follow", {
