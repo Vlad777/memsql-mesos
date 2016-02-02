@@ -75,7 +75,6 @@ class ClusterMonitor(SuperThread):
             self._follow_primary(cluster)
         except FollowPrimaryException as e:
             logger.error(str(e))
-            self._rollback_cluster(cluster)
             return
 
         primary_client = api_client.ApiClient(
@@ -128,7 +127,6 @@ class ClusterMonitor(SuperThread):
                     })
             except api_client.ApiException as e:
                 logger.error("Could not create license key %s: %s. Rolling back cluster" % (cluster.data.license_key, str(e)))
-                self._rollback_cluster(cluster)
                 return
 
         intention_data = {
@@ -143,7 +141,6 @@ class ClusterMonitor(SuperThread):
             })
         except (api_client.ConnectionError, api_client.ApiException) as e:
             logger.error("Could not create DeployMemSQL intention: %s. Rolling back cluster" % str(e))
-            self._rollback_cluster(cluster)
             return
 
         cluster.save(
@@ -165,14 +162,12 @@ class ClusterMonitor(SuperThread):
                 return
         except api_client.ApiException as e:
             logger.error("Could not deploy MemSQL: %s. Rolling back cluster" % str(e))
-            self._rollback_cluster(cluster)
             return
 
         if intention_row["status"] != "SUCCEEDED":
             logger.error(
                 "DeployMemsql failed with data %s for cluster %s"
                 % (intention_row["state"]["data"], cluster.name))
-            self._rollback_cluster(cluster)
             return
 
         cluster.save(
@@ -248,9 +243,3 @@ class ClusterMonitor(SuperThread):
                         })
             except (api_client.ConnectionError, api_client.ApiException) as e:
                 raise FollowPrimaryException("Error when attempting to get agent %s to follow the primary agent at %s:%d: %s" % (node.data.agent_id, primary_host, primary_agent_port, str(e)))
-
-    def _rollback_cluster(self, cluster):
-        # When we roll back clusters, we mark them as DELETING and delete them
-        # on the next iteration of the work() loop so that they show up as
-        # DELETING on the web UI.
-        cluster.save(status=const.ClusterStatus.DELETING)
