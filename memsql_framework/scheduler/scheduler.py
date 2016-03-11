@@ -25,6 +25,8 @@ CURRENT_AGENT_VERSION_URL = "http://versions.memsql.com/memsql-ops/latest"
 
 ZOOKEEPER_URL = os.environ['ZOOKEEPER_URL']
 MEMSQL_MESOS_ROLE = os.environ['MEMSQL_MESOS_ROLE']
+if MEMSQL_MESOS_ROLE == "":
+    MEMSQL_MESOS_ROLE = "*"
 
 NAME_MAP = {
     6: "TASK_STAGING",      # Initial state. Framework status updates should not use.
