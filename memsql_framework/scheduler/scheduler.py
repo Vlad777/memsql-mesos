@@ -238,7 +238,7 @@ class MemSQLScheduler(Scheduler):
                         agent_port=ports[0],
                         memsql_port=ports[1],
                         demo_port=ports[2],
-                        memsql_role=MESOS_ROLE,
+                        memsql_role=node.data.memsql_role,
                         cluster_name=cluster.name,
                         install_demo=cluster.data.install_demo,
                         agent_version=cluster.data.agent_version,
