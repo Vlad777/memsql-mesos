@@ -24,9 +24,7 @@ SHUTDOWN_TIMEOUT = 30  # in seconds
 CURRENT_AGENT_VERSION_URL = "http://versions.memsql.com/memsql-ops/latest"
 
 ZOOKEEPER_URL = os.environ['ZOOKEEPER_URL']
-MEMSQL_SCHEDULER_ROLE = os.environ.get('MEMSQL_SCHEDULER_ROLE')
-if MEMSQL_SCHEDULER_ROLE == "":
-    MEMSQL_SCHEDULER_ROLE = "*"
+MEMSQL_SCHEDULER_ROLE = os.getenv('MEMSQL_SCHEDULER_ROLE', '*')
 
 NAME_MAP = {
     6: "TASK_STAGING",      # Initial state. Framework status updates should not use.
