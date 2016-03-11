@@ -64,10 +64,12 @@ class MemSQLScheduler(Scheduler):
         task.slave_id.value = offer.slave_id.value
         cpu_resources = task.resources.add()
         cpu_resources.name = "cpus"
+        cpu_resource.role = memsql_role
         cpu_resources.type = mesos_pb2.Value.SCALAR
         cpu_resources.scalar.value = cpu
         mem_resources = task.resources.add()
         mem_resources.name = "mem"
+        mem_resources.role = memsql_role
         mem_resources.type = mesos_pb2.Value.SCALAR
         mem_resources.scalar.value = mem
 
@@ -88,6 +90,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
+        port_resource.role = memsql_role
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = agent_port
@@ -95,6 +98,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
+        port_resource.role = memsql_role
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = memsql_port
@@ -102,6 +106,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
+        port_resource.role = memsql_role
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = demo_port
