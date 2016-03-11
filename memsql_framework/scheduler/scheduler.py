@@ -24,6 +24,7 @@ SHUTDOWN_TIMEOUT = 30  # in seconds
 CURRENT_AGENT_VERSION_URL = "http://versions.memsql.com/memsql-ops/latest"
 
 ZOOKEEPER_URL = os.environ['ZOOKEEPER_URL']
+MEMSQL_MESOS_ROLE = os.environ['MEMSQL_MESOS_ROLE']
 
 NAME_MAP = {
     6: "TASK_STAGING",      # Initial state. Framework status updates should not use.
@@ -64,12 +65,12 @@ class MemSQLScheduler(Scheduler):
         task.slave_id.value = offer.slave_id.value
         cpu_resources = task.resources.add()
         cpu_resources.name = "cpus"
-        cpu_resource.role = memsql_role
+        cpu_resource.role = MEMSQL_MESOS_ROLE
         cpu_resources.type = mesos_pb2.Value.SCALAR
         cpu_resources.scalar.value = cpu
         mem_resources = task.resources.add()
         mem_resources.name = "mem"
-        mem_resources.role = memsql_role
+        mem_resources.role = MEMSQL_MESOS_ROLE
         mem_resources.type = mesos_pb2.Value.SCALAR
         mem_resources.scalar.value = mem
 
@@ -90,7 +91,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
-        port_resource.role = memsql_role
+        port_resource.role = MEMSQL_MESOS_ROLE
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = agent_port
@@ -98,7 +99,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
-        port_resource.role = memsql_role
+        port_resource.role = MEMSQL_MESOS_ROLE
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = memsql_port
@@ -106,7 +107,7 @@ class MemSQLScheduler(Scheduler):
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
-        port_resource.role = memsql_role
+        port_resource.role = MEMSQL_MESOS_ROLE
         port_resource.type = mesos_pb2.Value.RANGES
         port_range = port_resource.ranges.range.add()
         port_range.begin = demo_port
@@ -184,7 +185,7 @@ class MemSQLScheduler(Scheduler):
                 driver.declineOffer(offer.id)
                 continue
 
-            cpus, mem, disk, ports = utils.get_resources(offer.resources)
+            cpus, mem, disk, ports = utils.get_resources(offer.resources, MEMSQL_MESOS_ROLE)
             cluster = work
 
             try:
@@ -237,7 +238,7 @@ class MemSQLScheduler(Scheduler):
                         agent_port=ports[0],
                         memsql_port=ports[1],
                         demo_port=ports[2],
-                        memsql_role=node.data.memsql_role,
+                        memsql_role=MESOS_ROLE,
                         cluster_name=cluster.name,
                         install_demo=cluster.data.install_demo,
                         agent_version=cluster.data.agent_version,
