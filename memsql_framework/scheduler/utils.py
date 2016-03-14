@@ -1,12 +1,12 @@
 import itertools
 import random
 
-def get_resources(resources):
+def get_resources(resources, memsql_mesos_role):
     try:
-        cpus = next(rsc.scalar.value for rsc in resources if rsc.name == "cpus")
-        mem = next(rsc.scalar.value for rsc in resources if rsc.name == "mem")
+        cpus = next(rsc.scalar.value for rsc in resources if rsc.name == "cpus" and rsc.role == memsql_mesos_role)
+        mem = next(rsc.scalar.value for rsc in resources if rsc.name == "mem" and rsc.role == memsql_mesos_role)
         disk = next(rsc.scalar.value for rsc in resources if rsc.name == "disk")
-        port_ranges = list(range(port_range.begin, port_range.end + 1) for rsc in resources for port_range in rsc.ranges.range if rsc.name == "ports")
+        port_ranges = list(range(port_range.begin, port_range.end + 1) for rsc in resources for port_range in rsc.ranges.range if rsc.name == "ports" and rsc.role == memsql_mesos_role)
         ports = list(itertools.chain(*port_ranges))
         return cpus, mem, disk, ports
     except StopIteration:
