@@ -195,7 +195,6 @@ class MemSQLScheduler(Scheduler):
                 logger.error(
                     "Error while getting newest version of MemSQL Agent: %s. "
                     "Rolling back cluster" % str(e))
-                self._rollback_cluster(cluster)
                 continue
 
             cluster.save(agent_version=agent_version)
@@ -428,10 +427,6 @@ class MemSQLScheduler(Scheduler):
                     logger.error(
                         "Could not promote child agg to master for cluster %s: %s"
                         % (cluster.name, str(e)))
-                    self._rollback_cluster(cluster)
                     return
         finally:
             cluster.save(currently_promoting_master=False)
-
-    def _rollback_cluster(self, cluster):
-        cluster.save(status=const.ClusterStatus.DELETING)
