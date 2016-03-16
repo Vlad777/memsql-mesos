@@ -89,23 +89,26 @@ def run(root_path):
 
     # Assert that we're running on Mesos 0.22.1 or above.
     try:
-        version_url = "http://%s/state.json" % MESOS_MASTER_URL
-        data = web_helpers.get_json_from_url(version_url)
-        mesos_version = data["version"]
-    except (web_helpers.GetJSONFromURLException, KeyError) as e:
-        logger.error(
-            "Error while trying to find version information for Mesos "
-            "master %s: %s" % (MESOS_MASTER_URL, str(e)))
-        sys.exit(1)
-    try:
-        mesos_version_tuple = tuple(int(x) for x in mesos_version.split('.'))
-        if mesos_version_tuple < (0, 22, 1):
+        try:
+            version_url = "http://%s/state.json" % MESOS_MASTER_URL
+            data = web_helpers.get_json_from_url(version_url)
+            mesos_version = data["version"]
+        except (web_helpers.GetJSONFromURLException, KeyError) as e:
             logger.error(
-                "Mesos master at %s is version %s, but we require at least "
-                "Mesos version 0.22.1" % (MESOS_MASTER_URL, mesos_version))
+                "Error while trying to find version information for Mesos "
+                "master %s: %s" % (MESOS_MASTER_URL, str(e)))
             sys.exit(1)
-    except ValueError:
-        # If we can't parse the version tuple, we ignore it.
+        try:
+            mesos_version_tuple = tuple(int(x) for x in mesos_version.split('.'))
+            if mesos_version_tuple < (0, 22, 1):
+                logger.error(
+                    "Mesos master at %s is version %s, but we require at least "
+                    "Mesos version 0.22.1" % (MESOS_MASTER_URL, mesos_version))
+                sys.exit(1)
+        except ValueError:
+            # If we can't parse the version tuple, we ignore it.
+            pass
+    except Exception:
         pass
 
     framework = mesos_pb2.FrameworkInfo()

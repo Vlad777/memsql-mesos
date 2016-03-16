@@ -12,5 +12,5 @@ def get_json_from_url(url):
         resp.raise_for_status()
         data = resp.json()
         return data
-    except (requests.RequestException, json.JSONDecodeError, UnicodeDecodeError) as e:
+    except (requests.RequestException, json.JSONDecodeError) as e:
         raise GetJSONFromURLException(e)
