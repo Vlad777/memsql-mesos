@@ -89,6 +89,11 @@ class MemSQLScheduler(Scheduler):
         agent_task.container.docker.image = "memsql/mesos-executor:latest"
         agent_task.container.docker.force_pull_image = True
 
+        if memsql_role = const.MemSQLRole.MASTER:
+            agent_task.discovery               = mesos_pb2.DiscoveryInfo()
+            agent_task.discovery.visibility    = mesos_pb2.DiscoveryInfo.Visibility.EXTERNAL
+            agent_task.discovery.name          = agent_host
+
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
         port_resource.role = MEMSQL_SCHEDULER_ROLE
