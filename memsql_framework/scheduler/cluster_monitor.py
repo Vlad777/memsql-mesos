@@ -5,7 +5,6 @@ from mesos.interface import mesos_pb2
 from memsql_framework.data import const
 from memsql_framework.util import api_client
 from memsql_framework.util.super_thread import SuperThread
-from memsql_framework.util.time_helpers import unix_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +24,7 @@ class ClusterMonitor(SuperThread):
 
     def work(self):
         for cluster in self.root.clusters:
-            timed_out = False
-            if not cluster.data.successfully_started:
-                timed_out = cluster.data.created + CLUSTER_TIMEOUT < unix_timestamp()
-
-            if timed_out:
-                logger.warning(
-                    "Cluster %s has taken more than %d seconds to start up, "
-                    "so we are rolling it back"
-                    % (cluster.name, CLUSTER_TIMEOUT))
-
-            if timed_out or cluster.data.status == const.ClusterStatus.DELETING:
+            if cluster.data.status == const.ClusterStatus.DELETING:
                 self._delete_cluster(cluster)
             elif cluster.data.status == const.ClusterStatus.WAITING_FOR_AGENTS:
                 self._deploy_memsql(cluster)
