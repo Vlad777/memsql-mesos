@@ -81,7 +81,7 @@ class MemSQLScheduler(Scheduler):
             ddd_resources.scalar.value = disk
         return task
 
-    def make_agent_task(self, offer, cpu, mem, disk, host_ip, agent_host, agent_port, memsql_port, demo_port, memsql_role, cluster_name, install_demo, agent_version, primary_host=None, primary_memsql_port=None):
+    def make_agent_task(self, offer, cpu, mem, disk, host_ip, agent_host, agent_port, memsql_port, demo_port, memsql_role, cluster_name, display_name, install_demo, agent_version, primary_host=None, primary_memsql_port=None):
         agent_task = self.make_task(offer, cpu, mem, disk)
         agent_task.name = "agent task %s" % agent_task.task_id.value
         agent_task.command.value = "/sbin/my_init"
