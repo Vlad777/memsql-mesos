@@ -81,7 +81,7 @@ class MemSQLScheduler(Scheduler):
             ddd_resources.scalar.value = disk
         return task
 
-    def make_agent_task(self, offer, cpu, mem, disk, agent_host, agent_port, memsql_port, demo_port, memsql_role, cluster_name, install_demo, agent_version, primary_host=None, primary_memsql_port=None):
+    def make_agent_task(self, offer, cpu, mem, disk, host_ip, agent_host, agent_port, memsql_port, demo_port, memsql_role, cluster_name, install_demo, agent_version, primary_host=None, primary_memsql_port=None):
         agent_task = self.make_task(offer, cpu, mem, disk)
         agent_task.name = "agent task %s" % agent_task.task_id.value
         agent_task.command.value = "/sbin/my_init"
@@ -89,10 +89,16 @@ class MemSQLScheduler(Scheduler):
         agent_task.container.docker.image = "memsql/mesos-executor:latest"
         agent_task.container.docker.force_pull_image = True
 
-        if memsql_role = const.MemSQLRole.MASTER:
-            agent_task.discovery               = mesos_pb2.DiscoveryInfo()
-            agent_task.discovery.visibility    = mesos_pb2.DiscoveryInfo.Visibility.EXTERNAL
-            agent_task.discovery.name          = agent_host
+        if memsql_role == const.MemSQLRole.MASTER:
+            #added host_ip as parameter
+            agent_task.discovery.name = host_ip
+            agent_task.discovery.visibility = mesos_pb2.DiscoveryInfo.EXTERNAL
+            discovery_port = agent_task.discovery.ports.ports.add()
+            discovery_port.number = memsql_port
+            discovery_label = agent_task.discovery.labels.labels.add()
+            discovery_label.key = "cluster_name"
+            #cluster_name is really the cluster_id, so had to add additional parameter for display_name
+            discovery_label.value = display_name
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
@@ -239,12 +245,14 @@ class MemSQLScheduler(Scheduler):
                         cpu=flavor.cpu,
                         mem=flavor.memory_mb,
                         disk=flavor.disk_mb,
+                        host_ip=socket.gethostbyname(offer.hostname),
                         agent_host=host,
                         agent_port=ports[0],
                         memsql_port=ports[1],
                         demo_port=ports[2],
                         memsql_role=node.data.memsql_role,
                         cluster_name=cluster.name,
+                        display_name=cluster.data.display_name,
                         install_demo=cluster.data.install_demo,
                         agent_version=cluster.data.agent_version,
                         **extras)
