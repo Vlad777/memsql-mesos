@@ -90,15 +90,10 @@ class MemSQLScheduler(Scheduler):
         agent_task.container.docker.force_pull_image = True
 
         if memsql_role == const.MemSQLRole.MASTER:
-            #added host_ip as parameter
-            agent_task.discovery.name = host_ip
+            agent_task.discovery.name = "memsql-%s" % display_name
             agent_task.discovery.visibility = mesos_pb2.DiscoveryInfo.EXTERNAL
             discovery_port = agent_task.discovery.ports.ports.add()
             discovery_port.number = memsql_port
-            discovery_label = agent_task.discovery.labels.labels.add()
-            discovery_label.key = "cluster_name"
-            #cluster_name is really the cluster_id, so had to add additional parameter for display_name
-            discovery_label.value = display_name
 
         port_resource = agent_task.resources.add()
         port_resource.name = "ports"
