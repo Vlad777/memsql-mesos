@@ -22,12 +22,7 @@ from memsql_framework.scheduler.cluster_monitor import ClusterMonitor
 from memsql_framework.ui.api.pool import Pool
 from memsql_framework.ui.server import WebServer
 
-import mesos.cli as mesos
-
 MESOS_MASTER_URL = os.environ['MESOS_MASTER_URL']
-if MESOS_MASTER_URL.startswith("zk://"):
-    MESOS_MASTER_URL=mesos.resolve(MESOS_MASTER_URL).strip()
-
 ZOOKEEPER_URL = os.environ['ZOOKEEPER_URL']
 
 # these are provided by marathon to tell us where we are running
